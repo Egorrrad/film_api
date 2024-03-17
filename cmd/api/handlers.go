@@ -9,49 +9,65 @@ import (
 	"strconv"
 )
 
-/*
-POST   /actor/<name>/<gender>/<birthday> :  добавление информации об актёре (имя, пол, дата рождения)
-DELETE /actor/<actorid>    :  удаляет актёра по ID
+// Middleware для проверки API ключа
+func (app *application) apiKeyMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		key := r.Header.Get("API-Key")
 
-GET    /task/<taskid>      :  возвращает одну задачу по её ID
-GET    /task/              :  возвращает все задачи
-DELETE /task/<taskid>      :  удаляет задачу по ID
-GET    /tag/<tagname>      :  возвращает список задач с заданным тегом
-GET    /due/<yy>/<mm>/<dd> :  возвращает список задач, запланированных на указанную дату
+		usr, err := app.users.Get(key)
+		if err != nil {
+			http.Error(w, "Invalid API key", http.StatusUnauthorized)
+			return
+		}
+		if key == usr.Api_key {
+			next.ServeHTTP(w, r)
+		} else {
+			http.Error(w, "Invalid API key", http.StatusUnauthorized)
+			return
+		}
 
-При добавлении фильма указываются его название
-(не менее 1 и не более 150 символов),
-описание (не более 1000 символов),
-дата выпуска,
-рейтинг (от 0 до 10) и список актёров:
+		// next.ServeHTTP(w, r)
 
-POST /film/
-*/
+	})
+}
 
 func (app *application) actor(w http.ResponseWriter, r *http.Request) {
+	key := r.Header.Get("API-Key")
 	if r.Method == http.MethodGet {
 		app.getActor(w, r)
-	} else if r.Method == http.MethodPost {
-		app.createActor(w, r)
-	} else if r.Method == http.MethodDelete {
-		app.deleteActor(w, r)
-	} else if r.Method == http.MethodPut {
-		app.changeActor(w, r)
 	} else {
-		http.Error(w, fmt.Sprintf("expect method GET, DELETE, POST or PUT at /actor, got %v", r.Method), http.StatusMethodNotAllowed)
+		if !app.checkAdmin(w, key) {
+			return
+		}
+
+		if r.Method == http.MethodPost {
+			app.createActor(w, r)
+		} else if r.Method == http.MethodDelete {
+			app.deleteActor(w, r)
+		} else if r.Method == http.MethodPut {
+			app.changeActor(w, r)
+		} else {
+			http.Error(w, fmt.Sprintf("expect method GET, DELETE, POST or PUT at /actor, got %v", r.Method), http.StatusMethodNotAllowed)
+		}
 	}
 
 }
 
 func (app *application) film(w http.ResponseWriter, r *http.Request) {
+	key := r.Header.Get("API-Key")
 	if r.Method == http.MethodGet {
 		app.getFilm(w, r)
-	} else if r.Method == http.MethodPost {
-		app.createFilm(w, r)
-	} else if r.Method == http.MethodDelete {
-		app.deleteFilm(w, r)
 	} else {
-		http.Error(w, fmt.Sprintf("expect method GET, DELETE or POST at /film, got %v", r.Method), http.StatusMethodNotAllowed)
+		if !app.checkAdmin(w, key) {
+			return
+		}
+		if r.Method == http.MethodPost {
+			app.createFilm(w, r)
+		} else if r.Method == http.MethodDelete {
+			app.deleteFilm(w, r)
+		} else {
+			http.Error(w, fmt.Sprintf("expect method GET, DELETE or POST at /film, got %v", r.Method), http.StatusMethodNotAllowed)
+		}
 	}
 
 }
@@ -60,6 +76,11 @@ func (app *application) getActor(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 
 	id, err := strconv.Atoi(params.Get("id"))
+
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
 
 	act, err := app.actors.Get_By_Id(id)
 

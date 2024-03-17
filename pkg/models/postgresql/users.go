@@ -29,3 +29,22 @@ func (m *UserModel) Get(api_key string) (*models.User, error) {
 
 	return usr, nil
 }
+
+func (m *UserModel) IsAdmin(api_key string) (bool, error) {
+	stmt := `SELECT role, api_key FROM users WHERE api_key = $1`
+
+	row := m.DB.QueryRow(stmt, api_key)
+
+	usr := &models.User{}
+
+	err := row.Scan(&usr.Role, &usr.Api_key)
+
+	if err != nil {
+		return false, err
+	}
+	if usr.Role == "admin" {
+		return true, nil
+	}
+
+	return false, nil
+}

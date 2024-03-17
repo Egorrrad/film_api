@@ -33,3 +33,14 @@ func (app *application) renderJSON(w http.ResponseWriter, v interface{}) {
 		return
 	}
 }
+
+// Access is denied
+func (app *application) checkAdmin(w http.ResponseWriter, api_key string) bool {
+	result, _ := app.users.IsAdmin(api_key)
+
+	if !result {
+		http.Error(w, "Access is denied", http.StatusForbidden)
+		return false
+	}
+	return true
+}
