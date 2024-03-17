@@ -15,7 +15,7 @@ type application struct {
 	infoLog  *log.Logger
 	actors   *postgresql.ActorModel
 	films    *postgresql.FilmModel
-	users    *postgresql.UserModel
+	// users    *postgresql.UserModel
 }
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 		infoLog:  infoLog,
 		actors:   &postgresql.ActorModel{DB: db},
 		films:    &postgresql.FilmModel{DB: db},
-		users:    &postgresql.UserModel{DB: db},
+		// users:    &postgresql.UserModel{DB: db},
 	}
 
 	srv := &http.Server{

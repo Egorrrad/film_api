@@ -28,34 +28,9 @@ GET    /due/<yy>/<mm>/<dd> :  возвращает список задач, за
 POST /film/
 */
 
-func apiKeyMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		//key := r.Header.Get("API-Key")
-		/*
-				usr, err := app.users.Get(key)
-			if err != nil {
-				app.serverError(w, err)
-				return
-			}
-			if key == usr.Api_key && usr.Role == "admin" {
-				next.ServeHTTP(w, r)
-			} else {
-				http.Error(w, "Invalid API key", http.StatusUnauthorized)
-				return
-			}
-
-		*/
-		next.ServeHTTP(w, r)
-
-		fmt.Println(r.URL)
-
-	})
-}
-
 func (app *application) actor(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		app.getActor(w, r)
-		fmt.Println(r.URL)
 	} else if r.Method == http.MethodPost {
 		app.createActor(w, r)
 	} else if r.Method == http.MethodDelete {
