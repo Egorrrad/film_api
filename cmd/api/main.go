@@ -18,16 +18,16 @@ type application struct {
 	users    *postgresql.UserModel
 }
 
-// @title Film App API
-// @version 1.0
-// @description Это API для сервера фильмотеки
+//	@title			Film App API
+//	@version		1.0
+//	@description	Это API для сервера фильмотеки
 
-// @host localhost:4000
-// @BasePath /
+//	@host		localhost:4000
+//	@BasePath	/
 
-// @securityDefinitions.apikey ApiKeyAuth
-// @in header
-// @name Authorization
+//	@securityDefinitions.apikey	ApiKeyAuth
+//	@in							header
+//	@name						Authorization
 // description Type 'Bearer TOKEN' to correctly set the API Key
 
 func main() {
