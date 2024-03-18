@@ -76,7 +76,7 @@ func (app *application) film(w http.ResponseWriter, r *http.Request) {
 //	@Tags			actor
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path		int	true	"Actor ID"
+//	@Param			id	query		int	true	"Actor ID"
 //	@Success		200	{object}	models.Actor
 //
 // @Failure      400  {string}  string    "error"
@@ -147,7 +147,7 @@ func (app *application) createActor(w http.ResponseWriter, r *http.Request) {
 //	@Tags			actor
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path		int		true	"Actor ID"
+//	@Param			id	query		int		true	"Actor ID"
 //	@Success		200	{string}	string	"ok"
 //
 // Failure      400  {string}  string    "error"
@@ -172,7 +172,7 @@ func (app *application) deleteActor(w http.ResponseWriter, r *http.Request) {
 // changeActor godoc
 //
 //	@Summary		Изменение информации об актере
-//	@Description	Возможно изменить любую информацию об актёре по его id, как частично, так и полностью
+//	@Description	Возможно изменить любую информацию об актёре по его id, как частично, так и полностью. Принимается модель actor в виде Json
 //	@Tags			actor
 //	@Accept			json
 //	@Produce		json
@@ -242,7 +242,7 @@ func (app *application) getActors(w http.ResponseWriter, r *http.Request) {
 //	@Tags			film
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path		int	true	"Film ID"
+//	@Param			id	query		int	true	"Film ID"
 //	@Success		200	{object}	models.Film
 //
 // Failure      400  {string}  string    "error"
@@ -328,7 +328,7 @@ func (app *application) changeFilm(w http.ResponseWriter, r *http.Request) {
 //	@Tags			film
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path		int	true	"Film ID"
+//	@Param			id	query		int	true	"Film ID"
 //	@Success		200	{integer}	int		id
 //
 // Failure      400  {string}  string    "error"
@@ -354,10 +354,10 @@ func (app *application) deleteFilm(w http.ResponseWriter, r *http.Request) {
 //
 //	@Summary		Получение фильма по id
 //	@Description	Получение фильма по его id
-//	@Tags			film
+//	@Tags			films
 //	@Accept			json
 //	@Produce		json
-//	@Param			by	path		string	true	"Sorted By"
+//	@Param			by	query		string	true	"Sorted By"
 //	@Success		200	{object}	models.Films
 //
 // Failure      400  {string}  string    "error"

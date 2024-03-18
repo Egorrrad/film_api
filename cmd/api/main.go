@@ -27,7 +27,7 @@ type application struct {
 
 //	@securityDefinitions.apikey	ApiKeyAuth
 //	@in							header
-//	@name						Authorization
+//	@name						API-Key
 // description Type 'Bearer TOKEN' to correctly set the API Key
 
 func main() {
