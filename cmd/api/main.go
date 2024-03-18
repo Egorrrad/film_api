@@ -18,6 +18,18 @@ type application struct {
 	users    *postgresql.UserModel
 }
 
+//	@title			Film App API
+//	@version		1.0
+//	@description	Это API для сервера фильмотеки
+
+//	@host		localhost:4000
+//	@BasePath	/api
+
+//	@securityDefinitions.apikey	ApiKeyAuth
+//	@in							header
+//	@name						API-Key
+// description Type 'Bearer TOKEN' to correctly set the API Key
+
 func main() {
 	addr := flag.String("addr", ":4000", "Сетевой адрес веб-сервера")
 	//dsn := flag.String("dsn", "api:web00top@/snippetbox?parseTime=true", "Название MySQL источника данных")
@@ -64,3 +76,7 @@ func openDB(dsn string) (*sql.DB, error) {
 	}
 	return db, nil
 }
+
+// swag init -g cmd/api/main.go
+
+// go run ./cmd/api

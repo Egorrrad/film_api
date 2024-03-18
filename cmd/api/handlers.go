@@ -9,83 +9,90 @@ import (
 	"strconv"
 )
 
-/*
-POST   /actor/<name>/<gender>/<birthday> :  добавление информации об актёре (имя, пол, дата рождения)
-DELETE /actor/<actorid>    :  удаляет актёра по ID
+// Middleware для проверки API ключа
 
-GET    /task/<taskid>      :  возвращает одну задачу по её ID
-GET    /task/              :  возвращает все задачи
-DELETE /task/<taskid>      :  удаляет задачу по ID
-GET    /tag/<tagname>      :  возвращает список задач с заданным тегом
-GET    /due/<yy>/<mm>/<dd> :  возвращает список задач, запланированных на указанную дату
-
-При добавлении фильма указываются его название
-(не менее 1 и не более 150 символов),
-описание (не более 1000 символов),
-дата выпуска,
-рейтинг (от 0 до 10) и список актёров:
-
-POST /film/
-*/
-
-func apiKeyMiddleware(next http.Handler) http.Handler {
+func (app *application) apiKeyMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		//key := r.Header.Get("API-Key")
-		/*
-				usr, err := app.users.Get(key)
-			if err != nil {
-				app.serverError(w, err)
-				return
-			}
-			if key == usr.Api_key && usr.Role == "admin" {
-				next.ServeHTTP(w, r)
-			} else {
-				http.Error(w, "Invalid API key", http.StatusUnauthorized)
-				return
-			}
+		key := r.Header.Get("API-Key")
 
-		*/
-		next.ServeHTTP(w, r)
-
-		fmt.Println(r.URL)
+		usr, err := app.users.Get(key)
+		if err != nil {
+			http.Error(w, "Invalid API key", http.StatusUnauthorized)
+			return
+		}
+		if key == usr.Api_key {
+			next.ServeHTTP(w, r)
+		} else {
+			http.Error(w, "Invalid API key", http.StatusUnauthorized)
+			return
+		}
 
 	})
 }
 
 func (app *application) actor(w http.ResponseWriter, r *http.Request) {
+	key := r.Header.Get("API-Key")
 	if r.Method == http.MethodGet {
 		app.getActor(w, r)
-		fmt.Println(r.URL)
-	} else if r.Method == http.MethodPost {
-		app.createActor(w, r)
-	} else if r.Method == http.MethodDelete {
-		app.deleteActor(w, r)
-	} else if r.Method == http.MethodPut {
-		app.changeActor(w, r)
 	} else {
-		http.Error(w, fmt.Sprintf("expect method GET, DELETE, POST or PUT at /actor, got %v", r.Method), http.StatusMethodNotAllowed)
+		if !app.checkAdmin(w, key) {
+			return
+		}
+
+		if r.Method == http.MethodPost {
+			app.createActor(w, r)
+		} else if r.Method == http.MethodDelete {
+			app.deleteActor(w, r)
+		} else if r.Method == http.MethodPut {
+			app.changeActor(w, r)
+		} else {
+			http.Error(w, fmt.Sprintf("expect method GET, DELETE, POST or PUT at /actor, got %v", r.Method), http.StatusMethodNotAllowed)
+		}
 	}
 
 }
 
 func (app *application) film(w http.ResponseWriter, r *http.Request) {
+	key := r.Header.Get("API-Key")
 	if r.Method == http.MethodGet {
 		app.getFilm(w, r)
-	} else if r.Method == http.MethodPost {
-		app.createFilm(w, r)
-	} else if r.Method == http.MethodDelete {
-		app.deleteFilm(w, r)
 	} else {
-		http.Error(w, fmt.Sprintf("expect method GET, DELETE or POST at /film, got %v", r.Method), http.StatusMethodNotAllowed)
+		if !app.checkAdmin(w, key) {
+			return
+		}
+		if r.Method == http.MethodPost {
+			app.createFilm(w, r)
+		} else if r.Method == http.MethodDelete {
+			app.deleteFilm(w, r)
+		} else {
+			http.Error(w, fmt.Sprintf("expect method GET, DELETE or POST at /film, got %v", r.Method), http.StatusMethodNotAllowed)
+		}
 	}
 
 }
 
+//	@Summary		Получение информации об актере
+//	@Description	Получение информации о конкретном актере по id
+//	@Tags			actor
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	query		int	true	"Actor ID"
+//	@Success		200	{object}	models.Actor
+//
+// @Failure      400  {string}  string    "error"
+// @Failure      404  {string}  string    "error"
+//
+//	@Failure		500	{string}	string	"server error"
+//	@Router			/api/actor [get]
 func (app *application) getActor(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 
 	id, err := strconv.Atoi(params.Get("id"))
 
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
 	act, err := app.actors.Get_By_Id(id)
 
 	if err != nil {
@@ -97,6 +104,21 @@ func (app *application) getActor(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// createActor godoc
+//
+//	@Summary		Добавление информации об актере
+//	@Description	Добавление информации об актёре (имя, пол, дата рождения) через JSON
+//	@Tags			actor
+//	@Accept			json
+//	@Produce		json
+//	@Param			account	body		models.Actor	true	"Add actor"
+//	@Success		200		{integer}	int				id
+//
+// Failure      400  {string}  string    "error"
+// Failure      404  {string}  string    "error"
+//
+//	@Failure		500		{string}	string			"server error"
+//	@Router			/api/actor [post]
 func (app *application) createActor(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var act models.Actor
@@ -118,6 +140,21 @@ func (app *application) createActor(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// deleteActor godoc
+//
+//	@Summary		Удаление информации об актере
+//	@Description	Удаление информации об актёре по id
+//	@Tags			actor
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	query		int		true	"Actor ID"
+//	@Success		200	{string}	string	"ok"
+//
+// Failure      400  {string}  string    "error"
+// Failure      404  {string}  string    "error"
+//
+//	@Failure		500	{string}	string	"server error"
+//	@Router			/api/actor [delete]
 func (app *application) deleteActor(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 
@@ -132,6 +169,21 @@ func (app *application) deleteActor(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// changeActor godoc
+//
+//	@Summary		Изменение информации об актере
+//	@Description	Возможно изменить любую информацию об актёре по его id, как частично, так и полностью. Принимается модель actor в виде Json
+//	@Tags			actor
+//	@Accept			json
+//	@Produce		json
+//	@Param			account	body		models.Actor	true	"Change actor"
+//	@Success		200		{integer}	int				id
+//
+// Failure      400  {string}  string    "error"
+// Failure      404  {string}  string    "error"
+//
+//	@Failure		500		{string}	string			"server error"
+//	@Router			/api/actor [put]
 func (app *application) changeActor(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var act models.Actor
@@ -154,6 +206,23 @@ func (app *application) changeActor(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// getActors godoc
+//
+//	@Summary		Получение списка актёров
+//	@Description	Получение списка актёров, для каждого актёра выдаётся также список фильмов с его участием
+//	@Tags			actors
+//	@Accept			json
+//	@Produce		json
+//
+// Param			actor	body		models.Actor	true	"Change actor"
+//
+//	@Success		200	{object}	models.Actors
+//
+// Failure      400  {string}  string    "error"
+// Failure      404  {string}  string    "error"
+//
+//	@Failure		500	{string}	string	"server error"
+//	@Router			/api/actors [get]
 func (app *application) getActors(w http.ResponseWriter, r *http.Request) {
 
 	act, err := app.actors.Get_Actors()
@@ -166,6 +235,21 @@ func (app *application) getActors(w http.ResponseWriter, r *http.Request) {
 	app.renderJSON(w, act)
 }
 
+// getFilm godoc
+//
+//	@Summary		Получение фильма по id
+//	@Description	Получение фильма по его id
+//	@Tags			film
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	query		int	true	"Film ID"
+//	@Success		200	{object}	models.Film
+//
+// Failure      400  {string}  string    "error"
+// Failure      404  {string}  string    "error"
+//
+//	@Failure		500	{string}	string	"server error"
+//	@Router			/api/film [get]
 func (app *application) getFilm(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 
@@ -182,6 +266,21 @@ func (app *application) getFilm(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// createFilm godoc
+//
+//		@Summary		Добавление фильма
+//		@Description	При добавлении фильма указываются его название (не менее 1 и не более 150 символов), описание (не более 1000 символов), дата выпуска, рейтинг (от 0 до 10) и список актёров:
+//		@Tags			film
+//		@Accept			json
+//		@Produce		json
+//	 @Param			film	body		models.Film	true	"Add film"
+//		@Success		200	{integer}	int		id
+//
+// Failure      400  {string}  string    "error"
+// Failure      404  {string}  string    "error"
+//
+//	@Failure		500	{string}	string	"server error"
+//	@Router			/api/film [post]
 func (app *application) createFilm(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var fil models.Film
@@ -203,6 +302,7 @@ func (app *application) createFilm(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// not works
 func (app *application) changeFilm(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 
@@ -221,6 +321,21 @@ func (app *application) changeFilm(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// deleteFilm godoc
+//
+//	@Summary		Удаление фильма
+//	@Description	Удаление фильма по его id
+//	@Tags			film
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	query		int	true	"Film ID"
+//	@Success		200	{integer}	int		id
+//
+// Failure      400  {string}  string    "error"
+// Failure      404  {string}  string    "error"
+//
+//	@Failure		500	{string}	string	"server error"
+//	@Router			/api/film [delete]
 func (app *application) deleteFilm(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 
@@ -235,6 +350,21 @@ func (app *application) deleteFilm(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// getFilms godoc
+//
+//	@Summary		Получение фильма по id
+//	@Description	Получение фильма по его id
+//	@Tags			films
+//	@Accept			json
+//	@Produce		json
+//	@Param			by	query		string	true	"Sorted By"
+//	@Success		200	{object}	models.Films
+//
+// Failure      400  {string}  string    "error"
+// Failure      404  {string}  string    "error"
+//
+//	@Failure		500	{string}	string	"server error"
+//	@Router			/api/films [get]
 func (app *application) getFilms(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 
@@ -250,6 +380,7 @@ func (app *application) getFilms(w http.ResponseWriter, r *http.Request) {
 	app.renderJSON(w, films)
 }
 
+// not works
 func (app *application) searchFilm(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 
