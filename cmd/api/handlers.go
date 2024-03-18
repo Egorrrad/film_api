@@ -9,8 +9,6 @@ import (
 	"strconv"
 )
 
-import _ "films-api/docs"
-
 // Middleware для проверки API ключа
 
 func (app *application) apiKeyMiddleware(next http.Handler) http.Handler {
@@ -73,7 +71,6 @@ func (app *application) film(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// getActor godoc
 //	@Summary		Получение информации об актере
 //	@Description	Получение информации о конкретном актере по id
 //	@Tags			actor
@@ -81,11 +78,12 @@ func (app *application) film(w http.ResponseWriter, r *http.Request) {
 //	@Produce		json
 //	@Param			id	path		int	true	"Actor ID"
 //	@Success		200	{object}	models.Actor
-// Failure      400  {string}  string    "error"
-// Failure      404  {string}  string    "error"
+//
+// @Failure      400  {string}  string    "error"
+// @Failure      404  {string}  string    "error"
+//
 //	@Failure		500	{string}	string	"server error"
 //	@Router			/api/actor [get]
-
 func (app *application) getActor(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 
@@ -107,6 +105,7 @@ func (app *application) getActor(w http.ResponseWriter, r *http.Request) {
 }
 
 // createActor godoc
+//
 //	@Summary		Добавление информации об актере
 //	@Description	Добавление информации об актёре (имя, пол, дата рождения) через JSON
 //	@Tags			actor
@@ -114,11 +113,12 @@ func (app *application) getActor(w http.ResponseWriter, r *http.Request) {
 //	@Produce		json
 //	@Param			account	body		models.Actor	true	"Add actor"
 //	@Success		200		{integer}	int				id
+//
 // Failure      400  {string}  string    "error"
 // Failure      404  {string}  string    "error"
+//
 //	@Failure		500		{string}	string			"server error"
 //	@Router			/api/actor [post]
-
 func (app *application) createActor(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var act models.Actor
@@ -141,6 +141,7 @@ func (app *application) createActor(w http.ResponseWriter, r *http.Request) {
 }
 
 // deleteActor godoc
+//
 //	@Summary		Удаление информации об актере
 //	@Description	Удаление информации об актёре по id
 //	@Tags			actor
@@ -148,11 +149,12 @@ func (app *application) createActor(w http.ResponseWriter, r *http.Request) {
 //	@Produce		json
 //	@Param			id	path		int		true	"Actor ID"
 //	@Success		200	{string}	string	"ok"
+//
 // Failure      400  {string}  string    "error"
 // Failure      404  {string}  string    "error"
+//
 //	@Failure		500	{string}	string	"server error"
 //	@Router			/api/actor [delete]
-
 func (app *application) deleteActor(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 
@@ -168,6 +170,7 @@ func (app *application) deleteActor(w http.ResponseWriter, r *http.Request) {
 }
 
 // changeActor godoc
+//
 //	@Summary		Изменение информации об актере
 //	@Description	Возможно изменить любую информацию об актёре по его id, как частично, так и полностью
 //	@Tags			actor
@@ -175,11 +178,12 @@ func (app *application) deleteActor(w http.ResponseWriter, r *http.Request) {
 //	@Produce		json
 //	@Param			account	body		models.Actor	true	"Change actor"
 //	@Success		200		{integer}	int				id
+//
 // Failure      400  {string}  string    "error"
 // Failure      404  {string}  string    "error"
+//
 //	@Failure		500		{string}	string			"server error"
 //	@Router			/api/actor [put]
-
 func (app *application) changeActor(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var act models.Actor
@@ -203,18 +207,22 @@ func (app *application) changeActor(w http.ResponseWriter, r *http.Request) {
 }
 
 // getActors godoc
+//
 //	@Summary		Получение списка актёров
 //	@Description	Получение списка актёров, для каждого актёра выдаётся также список фильмов с его участием
 //	@Tags			actors
 //	@Accept			json
 //	@Produce		json
+//
 // Param			actor	body		models.Actor	true	"Change actor"
+//
 //	@Success		200	{object}	models.Actors
+//
 // Failure      400  {string}  string    "error"
 // Failure      404  {string}  string    "error"
+//
 //	@Failure		500	{string}	string	"server error"
 //	@Router			/api/actors [get]
-
 func (app *application) getActors(w http.ResponseWriter, r *http.Request) {
 
 	act, err := app.actors.Get_Actors()
@@ -228,6 +236,7 @@ func (app *application) getActors(w http.ResponseWriter, r *http.Request) {
 }
 
 // getFilm godoc
+//
 //	@Summary		Получение фильма по id
 //	@Description	Получение фильма по его id
 //	@Tags			film
@@ -235,11 +244,12 @@ func (app *application) getActors(w http.ResponseWriter, r *http.Request) {
 //	@Produce		json
 //	@Param			id	path		int	true	"Film ID"
 //	@Success		200	{object}	models.Film
+//
 // Failure      400  {string}  string    "error"
 // Failure      404  {string}  string    "error"
+//
 //	@Failure		500	{string}	string	"server error"
-//	@Router			/api/films [get]
-
+//	@Router			/api/film [get]
 func (app *application) getFilm(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 
@@ -256,19 +266,21 @@ func (app *application) getFilm(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// getActors godoc
-//	@Summary		Получение списка актёров
-//	@Description	Получение списка актёров, для каждого актёра выдаётся также список фильмов с его участием
-//	@Tags			film
-//	@Accept			json
-//	@Produce		json
-// Param			film	body		models.Film	true	"Add film"
-//	@Success		200	{integer}	int		id
+// createFilm godoc
+//
+//		@Summary		Добавление фильма
+//		@Description	При добавлении фильма указываются его название (не менее 1 и не более 150 символов), описание (не более 1000 символов), дата выпуска, рейтинг (от 0 до 10) и список актёров:
+//		@Tags			film
+//		@Accept			json
+//		@Produce		json
+//	 @Param			film	body		models.Film	true	"Add film"
+//		@Success		200	{integer}	int		id
+//
 // Failure      400  {string}  string    "error"
 // Failure      404  {string}  string    "error"
+//
 //	@Failure		500	{string}	string	"server error"
 //	@Router			/api/film [post]
-
 func (app *application) createFilm(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var fil models.Film
@@ -290,6 +302,7 @@ func (app *application) createFilm(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// not works
 func (app *application) changeFilm(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 
@@ -308,6 +321,21 @@ func (app *application) changeFilm(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// deleteFilm godoc
+//
+//	@Summary		Удаление фильма
+//	@Description	Удаление фильма по его id
+//	@Tags			film
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"Film ID"
+//	@Success		200	{integer}	int		id
+//
+// Failure      400  {string}  string    "error"
+// Failure      404  {string}  string    "error"
+//
+//	@Failure		500	{string}	string	"server error"
+//	@Router			/api/film [delete]
 func (app *application) deleteFilm(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 
@@ -322,6 +350,21 @@ func (app *application) deleteFilm(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// getFilms godoc
+//
+//	@Summary		Получение фильма по id
+//	@Description	Получение фильма по его id
+//	@Tags			film
+//	@Accept			json
+//	@Produce		json
+//	@Param			by	path		string	true	"Sorted By"
+//	@Success		200	{object}	models.Films
+//
+// Failure      400  {string}  string    "error"
+// Failure      404  {string}  string    "error"
+//
+//	@Failure		500	{string}	string	"server error"
+//	@Router			/api/films [get]
 func (app *application) getFilms(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 
@@ -337,6 +380,7 @@ func (app *application) getFilms(w http.ResponseWriter, r *http.Request) {
 	app.renderJSON(w, films)
 }
 
+// not works
 func (app *application) searchFilm(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 

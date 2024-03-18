@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 )
+import _ "films-api/docs"
 
 func (app *application) routes() *http.ServeMux {
 

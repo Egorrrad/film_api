@@ -23,7 +23,7 @@ type application struct {
 //	@description	Это API для сервера фильмотеки
 
 //	@host		localhost:4000
-//	@BasePath	/
+//	@BasePath	/api
 
 //	@securityDefinitions.apikey	ApiKeyAuth
 //	@in							header
