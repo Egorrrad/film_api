@@ -37,3 +37,6 @@ create table users
     api_key varchar(150)
 );
 
+
+INSERT INTO public.users (id, role, api_key) VALUES (1, 'admin', 'root');
+

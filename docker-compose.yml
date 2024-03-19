@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+    film-api:
+      build: ./
+      ports:
+        - '4000:4000'
+      depends_on:
+          - postgres
+      volumes:
+        - ./:/app
+
+    postgres:
+      image: postgres:13.3
+      environment:
+        POSTGRES_DB: "film_api"
+        POSTGRES_USER: "api_tester"
+        POSTGRES_PASSWORD: "testing"
+      ports:
+        - "5436:5432"

@@ -32,21 +32,23 @@ type application struct {
 
 func main() {
 	addr := flag.String("addr", ":4000", "Сетевой адрес веб-сервера")
-	//dsn := flag.String("dsn", "api:web00top@/snippetbox?parseTime=true", "Название MySQL источника данных")
 	flag.Parse()
 
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
-	connStr := "user=api_tester password=testing dbname=film_api sslmode=disable"
+	connStr := "host=postgres port=5432 user=api_tester password=testing dbname=film_api sslmode=disable"
+
+	//connStr := "user=api_tester password=testing dbname=film_api sslmode=disable"
+
 	db, err := openDB(connStr)
 	if err != nil {
 		errorLog.Fatal(err)
 	}
+	infoLog.Println("Успешный запуск базы данных postgres")
+
 	defer db.Close()
 
-	// И добавляем его в зависимостях нашего
-	// веб-приложения.
 	app := &application{
 		errorLog: errorLog,
 		infoLog:  infoLog,
@@ -60,7 +62,6 @@ func main() {
 		ErrorLog: errorLog,
 		Handler:  app.routes(),
 	}
-
 	infoLog.Printf("Запуск сервера на http://127.0.0.1%s", *addr)
 	err = srv.ListenAndServe()
 	errorLog.Fatal(err)
@@ -76,7 +77,3 @@ func openDB(dsn string) (*sql.DB, error) {
 	}
 	return db, nil
 }
-
-// swag init -g cmd/api/main.go
-
-// go run ./cmd/api

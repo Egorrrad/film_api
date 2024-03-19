@@ -44,3 +44,7 @@ func (app *application) checkAdmin(w http.ResponseWriter, api_key string) bool {
 	}
 	return true
 }
+
+func (app *application) printInfoRequest(r *http.Request) {
+	app.infoLog.Printf("%s %s", r.Method, r.URL)
+}

@@ -13,13 +13,16 @@ import (
 
 func (app *application) apiKeyMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		app.printInfoRequest(r)
 		key := r.Header.Get("API-Key")
 
 		usr, err := app.users.Get(key)
 		if err != nil {
+			app.infoLog.Printf("%s %s have Invalid API key", r.Method, r.URL)
 			http.Error(w, "Invalid API key", http.StatusUnauthorized)
 			return
 		}
+
 		if key == usr.Api_key {
 			next.ServeHTTP(w, r)
 		} else {

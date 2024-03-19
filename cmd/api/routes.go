@@ -17,6 +17,5 @@ func (app *application) routes() *http.ServeMux {
 
 	mux1 := http.NewServeMux()
 	mux1.Handle("/api/", app.apiKeyMiddleware(mux))
-
 	return mux1
 }
