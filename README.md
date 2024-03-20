@@ -29,3 +29,7 @@ INSERT INTO public.users (id, role, api_key) VALUES (1, 'admin', 'root');
 ```
 
 Даллее при каждом запросе к API нужно указывать ключ "root"
+
+### Документация
+
+Документация к API будет доступна по адресу  http://localhost:4000/swagger/index.html после запуска 
