@@ -355,8 +355,8 @@ func (app *application) deleteFilm(w http.ResponseWriter, r *http.Request) {
 
 // getFilms godoc
 //
-//	@Summary		Получение фильма по id
-//	@Description	Получение фильма по его id
+//	@Summary		Получение списка фильмов
+//	@Description	Получение списка фильмов с сортировкой по рейтингу, дате и названию
 //	@Tags			films
 //	@Accept			json
 //	@Produce		json

@@ -13,22 +13,16 @@ make build && make run
 make migrate
 ```
 
-Также нужно подключиться к базе данных:
+И создать API ключи пользователя и адмнистратора:
 ```
-psql -h localhost -p 5436 -d film_api -U api_tester -W
-```
-
-Ввести пароль:
-```
-testing
+make add_keys
 ```
 
-И создать API ключ "root":
-```
-INSERT INTO public.users (id, role, api_key) VALUES (1, 'admin', 'root');
-```
+Даллее при каждом запросе к API нужно указывать ключ
 
-Даллее при каждом запросе к API нужно указывать ключ "root"
+Доступные ключи:
+- "root" - администратор
+- "12345" - пользователь
 
 ### Документация
 
