@@ -320,7 +320,7 @@ const docTemplate = `{
         },
         "/api/films": {
             "get": {
-                "description": "Получение фильма по его id",
+                "description": "Получение списка фильмов с сортировкой по рейтингу, дате и названию",
                 "consumes": [
                     "application/json"
                 ],
@@ -330,7 +330,7 @@ const docTemplate = `{
                 "tags": [
                     "films"
                 ],
-                "summary": "Получение фильма по id",
+                "summary": "Получение списка фильмов",
                 "parameters": [
                     {
                         "type": "string",
@@ -456,7 +456,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:4000",
-	BasePath:         "/api",
+	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Film App API",
 	Description:      "Это API для сервера фильмотеки",

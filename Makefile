@@ -11,4 +11,4 @@ add_keys:
 	go run ./db
 
 swag:
-	swag init -g cmd/main.go
+	swag init -g ./cmd/api/main.go

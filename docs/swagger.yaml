@@ -1,4 +1,4 @@
-basePath: /api
+basePath: /
 definitions:
   models.Actor:
     properties:
@@ -271,7 +271,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Получение фильма по его id
+      description: Получение списка фильмов с сортировкой по рейтингу, дате и названию
       parameters:
       - description: Sorted By
         in: query
@@ -289,7 +289,7 @@ paths:
           description: server error
           schema:
             type: string
-      summary: Получение фильма по id
+      summary: Получение списка фильмов
       tags:
       - films
 securityDefinitions:

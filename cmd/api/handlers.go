@@ -128,6 +128,7 @@ func (app *application) createActor(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(&act)
 	if err != nil {
 		app.serverError(w, err)
+		return
 	}
 
 	id, err := app.actors.Insert(act.Name, act.Gender, act.Birthday)

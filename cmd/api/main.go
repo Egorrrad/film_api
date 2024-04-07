@@ -23,7 +23,7 @@ type application struct {
 //	@description	Это API для сервера фильмотеки
 
 //	@host		localhost:4000
-//	@BasePath	/api
+//	@BasePath	/
 
 //	@securityDefinitions.apikey	ApiKeyAuth
 //	@in							header
@@ -47,7 +47,12 @@ func main() {
 	}
 	infoLog.Println("Успешный запуск базы данных postgres")
 
-	defer db.Close()
+	defer func(db *sql.DB) {
+		err = db.Close()
+		if err != nil {
+
+		}
+	}(db)
 
 	app := &application{
 		errorLog: errorLog,
